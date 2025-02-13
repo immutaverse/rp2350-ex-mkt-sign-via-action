@@ -12,7 +12,7 @@ uses: actions/rp2350-firmware-signer@v2
     #Base64 encoded private key normally loaded from
     #github secret but you can provide it from 
     #any source. 
-    PRIVATE_KEY: ##### GET FROM PRIVATE VARIABLE
+    PRIVATE_KEY: ${{ secrets.RP2350_SAMPLE_PRIVATE_KEY }}
     
     # Path to otp firmare options file that will be 
     # updated with public key for signing.
@@ -34,6 +34,19 @@ uses: actions/rp2350-firmware-signer@v2
 
     
 
+    # TODO: Copy the input artifacts to a location 
+    # where out docker container can access them.
+
+    # TODO: Invoke out docker container 
+
+    # TODO: Parse the results from the docker container
+    # and ensue the expected build artifacts are present.
+
+    # TODO: Copy the signed output from our location where
+    # the docker container has to access to a location where
+    # users expect them and add a timestamp so we can accumulate
+    # multiple timestamp output.  And commit and push those 
+    # files back to the signed directory here.  
 
 
 
