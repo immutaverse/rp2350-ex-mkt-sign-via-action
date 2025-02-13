@@ -1,4 +1,6 @@
 # Example of signing a firmware artifact for a RP2350 Pico2
+## PRE-ALPHA - NOT READY FOR USE BY OTHERS
+
 This example uses our marketplace action 
 [rp2350-firmware-signer](https://github.com/marketplace/actions/rp2350-firmware-signer)
 to sign the firmware with our pre-bundled tool chain. This
@@ -44,9 +46,6 @@ version is for the RP2350 (pico2) but we can support many chipsets.
   that are pre-built in other CICD then store them in other repo
   and use the github submodule feature to make them availabile
   for the current build.
-
-  
-
 
 
 
