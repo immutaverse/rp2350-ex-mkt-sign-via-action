@@ -15,15 +15,14 @@ version is for the RP2350 (pico2) but we can support many chipsets.
   then saves the output as a signed artifact.    
 
 * [unsigned/blink_fast.uf2](unsigned/blink_fast.uf2)
-  a pre-compiled binary for the pico2 built from 
-  [rp2350-ex-blink-fast](https://github.com/immutaverse/rp2350-ex-blink-fast)
-  as an example of a unsigned binary.   Included here 
-  in binary form for simplicity in this example.  We would
-  normally build from source then sign.  You can clone the
-  sample repo and build the binary yourself if you have 
-  the arm compilers installed but you can also use our 
-  pre-build tool-chains that can build it from inside your
-  CICD from a git action. 
+  is a pre-compiled binary for the pico2 built from 
+  [rp2350-ex-blink-fast](https://github.com/immutaverse/rp2350-ex-blink-fast).  It is an example of a unsigned binary.  
+  We included it here in binary form for simplicity 
+  We would normally build from source then sign.  You can clone
+  the sample repo and build the binary yourself if you have 
+  the arm compilers and tool chain installed.  You can also 
+  use our pre-built tool-chains that can build it from inside your
+  CICD using a git action. 
 
 * [signed](signed) directory to store our signed artifact
   once we get it signed.  we will add a timestamp to each
