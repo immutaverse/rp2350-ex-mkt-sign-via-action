@@ -1,0 +1,39 @@
+
+uses: actions/rp2350-firmware-signer@v2
+  with:
+    # Path to the previously generated uf2 firmware file
+    FIRMWARE: 'unsigned/blink_fast.uf2'
+
+    # 'sign' to sign an existing firmware file.
+    # 'build' to build the firmware from source and sign it.
+    #   if the PRIVATE_KEY is provided.
+    BUILD_ACTION: 'sign'
+    
+    #Base64 encoded private key normally loaded from
+    #github secret but you can provide it from 
+    #any source. 
+    PRIVATE_KEY: ##### GET FROM PRIVATE VARIABLE
+    
+    # Path to otp firmare options file that will be 
+    # updated with public key for signing.
+    OTP_FILE: signed/blink_fast.otp.json
+
+    #  this is the boardname passed into the build
+    #  scripts.  normally only used when build_action
+    #  is set to build.  May not be needed for 
+    #  sign only events.
+    BOARD_NAME: 'pico2'
+
+    # source directory containing source code to build
+    #  with the SDK file.  Mandatory when build_action 
+    #  is set to build. This is the directory where 
+    #  you have saved your CMakeLists.txt See and example
+    #  at https://github.com/immutaverse/rp2350-ex-blink-fast    
+    #  ignored when build_action is set to sign.
+    SOURCE_DIR: 'NOT SET'
+
+    
+
+
+
+
