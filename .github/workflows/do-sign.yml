@@ -32,7 +32,11 @@ uses: actions/rp2350-firmware-signer@v2
     #  ignored when build_action is set to sign.
     SOURCE_DIR: 'NOT SET'
 
-    
+    #  metadata file that contains the metadata for the
+    # the firmware signing.  not all chips use this
+    # the pico2 rp2350 does not 
+    SIGN_METADATA: 'NOT SET'
+
 
     # TODO: Copy the input artifacts to a location 
     # where out docker container can access them.
@@ -42,11 +46,39 @@ uses: actions/rp2350-firmware-signer@v2
     # TODO: Parse the results from the docker container
     # and ensue the expected build artifacts are present.
 
-    # TODO: Copy the signed output from our location where
+    # TODO: Copy the sig  
+        ifned output from our location where
     # the docker container has to access to a location where
     # users expect them and add a timestamp so we can accumulate
     # multiple timestamp output.  And commit and push those 
     # files back to the signed directory here.  
 
+jobs:
+  sign-firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
+      - name: Run Signing Action
+        uses: your-org/signing-action@v1
+        with:
+          BUILD_ACTION: sign
+          OTP_FILE: otp.json
+          FIRMWARE: firmware.bin
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          BOARD_NAME: custom-board
 
+      - name: Rename and Timestamp Signed Artifact
+        run: |
+          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          mkdir -p signed_artifacts
+          mv docker_workspace/firmware.signed signed_artifacts/${TIMESTAMP}_firmware.signed
+
+      - name: Commit and Push Signed Firmware
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add signed_artifacts/
+          git commit -m "Add signed firmware $TIMESTAMP"
+          git push origin main
