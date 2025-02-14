@@ -1,5 +1,5 @@
 
-uses: actions/rp2350-firmware-signer@v2
+uses: actions/rp2350-firmware-signer@main
   with:
     # Path to the previously generated uf2 firmware file
     FIRMWARE: 'unsigned/blink_fast.uf2'
@@ -82,3 +82,5 @@ jobs:
           git add signed_artifacts/
           git commit -m "Add signed firmware $TIMESTAMP"
           git push origin main
+
+
