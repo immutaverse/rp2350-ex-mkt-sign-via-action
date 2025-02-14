@@ -1,3 +1,5 @@
+name: Example using action to sign firmware for rp2350
+on: [push]
 jobs:
   sign-firmware:
     runs-on: ubuntu-latest
