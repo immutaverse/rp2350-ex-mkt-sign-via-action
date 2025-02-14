@@ -51,3 +51,5 @@ jobs:
           git add signed_artifacts/
           git commit -m "Add signed firmware $TIMESTAMP"
           git push origin main
+
+          
