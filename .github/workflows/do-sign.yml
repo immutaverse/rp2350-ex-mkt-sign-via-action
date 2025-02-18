@@ -33,12 +33,13 @@ jobs:
           # Metadata file that contains firmware signing metadata.
           # Not all chips use this; the RP2350 does not.
           SIGN_METADATA: 'NOT SET'
-        secrets:
-          # Base64 encoded private key, normally loaded from
+          
+          # Base64 encoded private key, normally loaded from                 
           # GitHub secrets but can be provided from any source.
           PRIVATE_KEY: ${{ secrets.RP2350_SAMPLE_PRIVATE_KEY }}
 
           DOCKER_ACCESS_TOKEN: ${{ secrets.RP2350_DOCKER_ACCESS_KEY }}
+        
 
 
       - name: Rename and Timestamp Signed Artifact
