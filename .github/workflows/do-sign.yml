@@ -38,7 +38,7 @@ jobs:
           # GitHub secrets but can be provided from any source.
           PRIVATE_KEY: ${{ secrets.RP2350_SAMPLE_PRIVATE_KEY }}
 
-          DOCKER_ACCESS_TOKEN: ${{ secrets.RP2350_DOCKER_ACCESS_KEYDOCKER_ACCESS_TOKEN }}
+          DOCKER_ACCESS_TOKEN: ${{ secrets.RP2350_DOCKER_ACCESS_KEY }}
 
 
       - name: Rename and Timestamp Signed Artifact
@@ -54,6 +54,6 @@ jobs:
           git add signed_artifacts/
           git commit -m "Add signed firmware $TIMESTAMP"
           git push origin main
-          # joe2345678
+          # joe23456789
 
           #demo-signing-token
