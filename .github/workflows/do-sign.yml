@@ -11,6 +11,7 @@ jobs:
       - name: Set Environment Variables
         shell: bash
         run: |
+          
           # Set the firmware file we want to save        
           # we assume latter that this file will be copied
           # to the workspace directory
@@ -50,14 +51,7 @@ jobs:
           echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME" >> $GITHUB_ENV
           echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME"
 
-          # Copy the firmware to location to where we want the 
-          # firmware signer to have to access it.   
-          mkdir -p $SIGN_WORKSPACE
-          cp unsigned/*.uf2 $SIGN_WORKSPACE
-          cp unsigned/*.otp* $SIGN_WORKSPACE
-          echo "ls $SIGN_WORKSPACE"
-          ls $SIGN_WORKSPACE
-          
+        
           # Setup a timestamped directory where we want to 
           # copy  our signed resources This is only used           
           export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
@@ -65,25 +59,26 @@ jobs:
           echo "SIGN_OUTDIR=$SIGN_OUTDIR"
               
 
-
-
-      - name: Set up Docker Buildx
+      - name: sign_setup_directories
         shell: bash
         run: |
+          # Copy the firmware to location to where we want the 
+          # firmware signer to have to access it.  
+          # Note for better containment copy only the file you
+          # wanted signed to this directory.  This directory should
+          # also contain any otp file or other options files
+          # you want to use during the signing event.   
+          mkdir -p $SIGN_WORKSPACE
+          cp unsigned/*.uf2 $SIGN_WORKSPACE
+          cp unsigned/*.otp* $SIGN_WORKSPACE
+          echo "ls $SIGN_WORKSPACE"
+          ls $SIGN_WORKSPACE
+      
+
           # Make the directory where we want to save the signed firmware 
-          # exists. This must be inside of docker workspace
-          mkdir -p  OUTDIR
+          # exists. This must be inside of docker workspace          
           mkdir -p $SIGN_OUTDIR
-          
-          # copy our built firmware to a place where signing agent
-          # can reach it during the signing event.  Note for 
-          # better containment copy only the file you wanted signed
-          # to this directory.  This directory should contain 
-          # any otp file you want to use to set options during 
-          # the signing event.  
-          cp -r $FIRMWARE_SRC_DIR $DOCKER_WORKSPACE
-
-
+        
 
 
       - name: Run Signing Action
@@ -102,7 +97,7 @@ jobs:
           # it is first level inside of SIGN_WORKSPACE
           FIRMWARE_OUTPUT: '$FIRMWARE_OUT_NAME'
 
-          # 'sign' to sign an existing firmware file.
+          # 'sign' to sign an existing firmware filRename and Timestamp Signed Artifacte.
           # 'build' to build the firmware from source and sign it.
           BUILD_ACTION: 'sign'
           
@@ -134,11 +129,10 @@ jobs:
         
 
 
-      - name: Rename and Timestamp Signed Artifact
+      - name: Copy signed artifacts to their target location
+        shell: bash
         run: |
-          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
-          mkdir -p signed_artifacts
-          mv docker_workspace/firmware.signed signed_artifacts/${TIMESTAMP}_firmware.signed
+          cp $SIGN_WORKSPACE/* $SIGN_OUTDIR
 
       - name: Commit and Push Signed Firmware
         run: |
@@ -147,6 +141,6 @@ jobs:
           git add signed_artifacts/
           git commit -m "Add signed firmware $TIMESTAMP"
           git push origin main
-          # joe23456789103
+          # joe23456789104
 
           #demo-signing-token
