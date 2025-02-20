@@ -1,4 +1,4 @@
-name: Example using action to sign firmware for rp2350
+name: Example using action using immutaverse signer to sign firmware for rp2350
 on: [push]
 jobs:
   sign-firmware:
@@ -11,8 +11,10 @@ jobs:
       - name: Set Environment Variables
         shell: bash
         run: |
-          
-          # Set the firmware file we want to save        
+          # Setting up environment variables here is not strictly 
+          # necessary but it does make for nice documenation.
+
+          # The firmware file we want to sign
           # we assume latter that this file will be copied
           # to the workspace directory
           export FIRMWARE_FILE="blink_fast.uf2"
@@ -24,42 +26,9 @@ jobs:
           # This directory is mounted by the signing utilities
           # You should only place content in that directory
           # you want to expose to the signing utility. 
-          export SIGN_WORKSPACE="$GITHUB_WORKSPACE/sign_workspace"
-          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE" >> $GITHUB_ENV
-          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
- 
-          # Get firmware base name without extension
-          export FIRMWARE_BASE_NAME="${FIRname: Example using action to sign firmware for rp2350
-on: [push]
-jobs:
-  sign-firmware:
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set Environment Variables
-        shell: bash
-        run: |
-
-          # Setup a timestamped directory where we want to 
-          # copy  our signed resources This export FIRMWARE_BASE_NAME="${$FIRMWARE_FILE%.*}" is only used           
-          export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
-          echo "SIGN_OUTDIR=$SIGN_OUTDIR" >> $GITHUB_ENV
-          echo "SIGN_OUTDIR=$SIGN_OUTDIR"
-
-          # Set the firmware file we want to save        
-          # we assume latter that this file will be copied
-          # to the workspace directory
-          export FIRMWARE_FILE="blink_fast.uf2"
-          echo "FIRMWARE_FILE=$FIRMWARE_FILE" >> $GITHUB_ENV
-          echo "FIRMWARE_FILE=$FIRMWARE_FILE"
-
-          # Dedicated directory for signer to work with
-          # This directory is mounted by the signing utilities
-          # You should only place content in that directory
-          # you want to expose to the signing utility. 
+          # This could just point to the directory where the 
+          # binary file is located but it's safer to only give
+          # docker access to what it needs to do the signing. 
           export SIGN_WORKSPACE="sign_workspace"
           echo "SIGN_WORKSPACE=$SIGN_WORKSPACE" >> $GITHUB_ENV
           echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
@@ -73,136 +42,26 @@ jobs:
           export FIRMWARE_EXT="${FIRMWARE_FILE##*.}"
           echo "FIRMWARE_EXT=$FIRMWARE_EXT" >> $GITHUB_ENV
           echo "FIRMWARE_EXT=$FIRMWARE_EXT"
-  
-          # Insert .signed into our firmware file name.  
+
+          # Insert .signed into our firmware file name.  docker_workspace
           # for our output file. 
           export FIRMWARE_OUT_NAME="$FIRMWARE_BASE_NAME.signed.$FIRMWARE_EXT"
           echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME" >> $GITHUB_ENV
           echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME"
-
-                  
-
-      - name: sign_setup_directories
-        shell: bash
-        run: |
-          # Copy the firmware to location to where we want the 
-          # firmware signer to have to access it.  
-          # Note for better containment copy only the file you
-          # wanted signed to this directory.  This directory should
-          # also contain any otp file or other options files
-          # you want to use during the signing event.   
-          mkdir -p $SIGN_WORKSPACE
-          cp unsigned/*.uf2 $SIGN_WORKSPACE
-          cp unsigned/*.otp* $SIGN_WORKSPACE 2>/dev/null || true
-          echo "listing files $SIGN_WORKSPACE"
-          ls -lah $SIGN_WORKSPACE
-          
-
-          # Make the directory where we want to save the signed firmware 
-          # exists. This must be inside of docker workspace          
-          mkdir -p $SIGN_OUTDIR
-          echo -lan "sign_workspace"
-          ls -lan sign_workspace
-        
-
-
-      - name: Run Signing Action
-        uses: immutaverse/rp2350-mkt-signer@main              
-        with:
-          # This is diectory where you want the signing utility
-          # to be able access files.r volumes inside GHCR-based containers.   You should only place assets
-          # you want the signing tool to have access to in this directory          
-          SIGN_WORKSPACE: '$SIGN_WORKSPACE'
-
-          # filename to read unsigned firmeware from Assumes it is 
-          # at first level directory inside $SIGN_WORKSPACE
-          FIRMWARE: '$FIRMWARE_FILE'
-
-          # filename to write signed firmware to.  assumes
-          # it is first level inside of SIGN_WORKSPACE
-          FIRMWARE_OUTPUT: '$FIRMWARE_OUT_NAME'
-
-          # 'sign' to sign an existing firmware filRename and Timestamp Signed Artifacte.
-          # 'build' to build the firmware from source and sign it.
-          BUILD_ACTION: 'sign'
-          
-          # Path to the OTP firmware options file that will be
-          # updated with the public key for signing.
-          # relative inside of DOCKER_WORK_DIR  Please note 
-          # this file will be changed destructively so 
-          # make a copy of it first.
-          OTP_FILE: '$SIGN_WORKSPACE/$FIRMWARE_BASE_NAME.otp.json'
-
-          # The board name passed into the build scripts.
-          # Normally only used when BUILD_ACTION = build.
-          BOARD_NAME: 'pico2'
-
-          # Source directory containing source code to build
-          # with the SDK file. Mandatory when BUILD_ACTION = build.
-          # Ignored when BUILD_ACTION = sign.
-          SOURCE_DIR: 'NOT SET'
-
-          # Metadata file that contains firmware signing metadata.
-          # Not all chips use this; the RP2350 does not.
-          SIGN_METADATA: 'NOT SET'
-          
-          # Base64 encoded private key, normally loaded from                 
-          # GitHub secrets but can be provided from any source.
-          PRIVATE_KEY: ${{ secrets.RP2350_SAMPLE_PRIVATE_KEY }}
-
-          SIGN_ACCESS_TOKEN: ${{ secrets.RP2350_DOCKER_ACCESS_KEY }}
-        
-
-
-      - name: Copy signed artifacts to their target location
-        shell: bash
-        run: |
-          cp $SIGN_WORKSPACE/* $SIGN_OUTDIR
-
-      - name: Commit and Push Signed Firmware
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add signed_artifacts/
-          git commit -m "Add signed firmware $TIMESTAMP"
-          git push origin main
-          # joe2345678910
-          #demo-signing-tokenMWARE_FILE%.*}"
-          echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME" >> $GITHUB_ENV
-          echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME"
-
-          # Get firmware extension without rest of the name
-          export FIRMWARE_EXT="${FIRMWARE_FILE##*.}"
-          echo "FIRMWARE_EXT=$FIRMWARE_EXT" >> $GITHUB_ENV
-          echo "FIRMWARE_EXT=$FIRMWARE_EXT"
-  
-          ## Where we want to write the signed firmware 
-          ## must be inside the sign workspace
-          #export FIRMWARE_IN_PATH="$SIGN_WORKSPACE/$FIRMWARE_FILE"
-          #echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH" >> $GITHUB_ENV  
-          #echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH"
-
-
-          # Insert .signed into our firmware file name.  
-          # for our output file. 
-          export FIRMWARE_OUT_NAME="$FIRMWARE_BASE_NAME.signed.$FIRMWARE_EXT"
-          echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME" >> $GITHUB_ENV
-          echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME"
-
         
           # Setup a timestamped directory where we want to 
           # copy  our signed resources This export FIRMWARE_BASE_NAME="${$FIRMWARE_FILE%.*}" is only used           
-          export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
-          echo "SIGN_OUTDIR=$SIGN_OUTDIR" >> $GITHUB_ENV
-          echo "SIGN_OUTDIR=$SIGN_OUTDIR"
+          #export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
+          #echo "SIGN_OUTDIR=$SIGN_OUTDIR" >> $GITHUB_ENV
+          #echo "SIGN_OUTDIR=$SIGN_OUTDIR"
               
 
       - name: sign_setup_directories
         shell: bash
         run: |
           # Copy the firmware to location to where we want the 
-          # firmware signer to have to access it.  
-          # Note for better containment copy only the file you
+          # firmware signer to have to access to it.  
+          # Note for better security isolation only the file you
           # wanted signed to this directory.  This directory should
           # also contain any otp file or other options files
           # you want to use during the signing event.   
@@ -213,73 +72,101 @@ jobs:
           ls -lah $SIGN_WORKSPACE
           
 
-          # Make the directory where we want to save the signed firmware 
+          # Make sure the directory where we want to save the signed firmware 
           # exists. This must be inside of docker workspace          
           mkdir -p $SIGN_OUTDIR
           echo -lan "sign_workspace"
           ls -lan sign_workspace
         
 
+      - name: Log in to GitHub Container Registry (GHCR) using immutiverse PAT
+          shell: bash
+          run: echo "${{ secrets.RP2350_DOCKER_ACCESS_KEY }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+          # TODO: We need to pass our access token to cloud to get 
+          # the token we need to access the docker image.  
+  
 
-      - name: Run Signing Action
-        uses: immutaverse/rp2350-mkt-signer@main              
-        with:
-          # This is diectory where you want the signing utility
-          # to be able access files.r volumes inside GHCR-based containers.   You should only place assets
-          # you want the signing tool to have access to in this directory          
-          SIGN_WORKSPACE: '$SIGN_WORKSPACE'
-
-          # filename to read unsigned firmeware from Assumes it is 
-          # at first level directory inside $SIGN_WORKSPACE
-          FIRMWARE: '$FIRMWARE_FILE'
-
-          # filename to write signed firmware to.  assumes
-          # it is first level inside of SIGN_WORKSPACE
-          FIRMWARE_OUTPUT: '$FIRMWARE_OUT_NAME'
-
-          # 'sign' to sign an existing firmware filRename and Timestamp Signed Artifacte.
-          # 'build' to build the firmware from source and sign it.
-          BUILD_ACTION: 'sign'
-          
-          # Path to the OTP firmware options file that will be
-          # updated with the public key for signing.
-          # relative inside of DOCKER_WORK_DIR  Please note 
-          # this file will be changed destructively so 
-          # make a copy of it first.
-          OTP_FILE: '$SIGN_WORKSPACE/$FIRMWARE_BASE_NAME.otp.json'
-
-          # The board name passed into the build scripts.
-          # Normally only used when BUILD_ACTION = build.
-          BOARD_NAME: 'pico2'
-
-          # Source directory containing source code to build
-          # with the SDK file. Mandatory when BUILD_ACTION = build.
-          # Ignored when BUILD_ACTION = sign.
-          SOURCE_DIR: 'NOT SET'
-
-          # Metadata file that contains firmware signing metadata.
-          # Not all chips use this; the RP2350 does not.
-          SIGN_METADATA: 'NOT SET'
-          
-          # Base64 encoded private key, normally loaded from                 
-          # GitHub secrets but can be provided from any source.
-          PRIVATE_KEY: ${{ secrets.RP2350_SAMPLE_PRIVATE_KEY }}
-
-          SIGN_ACCESS_TOKEN: ${{ secrets.RP2350_DOCKER_ACCESS_KEY }}
-        
+      - name: pull docker image from registry
+          shell: bash
+          run: |
+            echo "start docker pull"
+            docker pull ghcr.io/immutaverse/pico-sign:latest          
+            echo "docker pull complete"
 
 
-      - name: Copy signed artifacts to their target location
+      # NOTE:  We are manually starting Docker here because otherwise
+      #  We must save the built firmware to a using artfifact upload
+      #  then download it which takes time.  In this approach
+      #  we limit the docker file to only reading the directory
+      #  where we have copied or linked the firmware file so while
+      #  it runs in same memory space it's scope of access is still 
+      #  limited.  The local cp above is quite fast while the artifact
+      #  upload/download is quite slow.
+      - name: Run Docker Container to perform the signing
         shell: bash
         run: |
-          cp $SIGN_WORKSPACE/* $SIGN_OUTDIR
+          echo "start docker run"
+          docker run --rm -a stdout -a stderr -v "$GITHUB_WORKSPACE/$SIGN_WORKSPACE:/workspace" \
+            -e PRIVATE_KEY="$PRIVATE_KEY" \
+            -e FIRMWARE="workspace/$FIRMWARE_FILE" \
+            -e OTP_FILE='workspace/$FIRMWARE_BASE_NAME.otp.json' \
+            -e FIRMWARE_OUTPUT="workspace/$FIRMWAR_OUT_NAME" \
+            -e BOARD_NAME="pico2" \
+            -e BUILD_ACTION="sign}" \
+            -e SIGN_LOG_LEVEL="DEBCUG" \
+            -e SIGN_METADATA="NONE" \
+            -e SOURCE_DIR="NONE" \
+            -e SIGN_ACCESS_TOKEN="${{ secrets.RP2350_DOCKER_ACCESS_KEY }} \            
+            ghcr.io/immutaverse/pico-sign:latest
 
-      - name: Commit and Push Signed Firmware
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add signed_artifacts/
-          git commit -m "Add signed firmware $TIMESTAMP"
-          git push origin main
-          # joe2345678910
-          #demo-signing-token
+            #NOTE:  :latest can be replaced with the specific version 
+            #  of the docker file you want to run. We always prefer latest 
+            #  to get most recent security patches but this can break builds
+            #  our therory is better to get the path and stop and fix the build
+            #  ASAP but not every group agrees. 
+            
+          echo "docker run finished"
+          echo "ARTIFACT_NAME=signed-$(basename-${{ github.repository }})-$(date +'%Y%m%d')"  >> $GITHUB_ENV
+
+
+      # The artifact can be referenced by name for retention days.
+      # presumably another process will grab the signed artifact 
+      # and copy to a location where it can be downloaded to specific
+      # devices in a controlled fashion. 
+      - name: Upload the subdirectory as an artifact
+        uses: actions/upload-artifact@v4docker_workspace
+
+
+
+      #- name: Commit and Push Signed Firmware
+      #  run: |
+      #    git config --global user.name "github-actions"
+      #    git config --global user.email "github-actions@github.com"
+      #    git add signed_artifacts/
+      #    git commit -m "Add signed firmware $TIMESTAMP"
+      #    git push origin main
+      #    # joe2345678910
+      #    #demo-signing-token
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

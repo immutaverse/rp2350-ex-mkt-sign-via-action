@@ -33,7 +33,7 @@ version is for the RP2350 (pico2) but we can support many chipsets.
 
 ## Important: 
 * NOTE: We pull the signing secret from a variable defined for our 
-  repository.  When you fork this so you can sign your own file.
+  repository.  When you fork this so you can sign your own key
   you will need to declare your own secret with a private signing 
   key. 
 

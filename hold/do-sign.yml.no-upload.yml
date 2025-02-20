@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 name: Example using action to sign firmware for rp2350
 on: [push]
 jobs:
