@@ -29,12 +29,12 @@ jobs:
           echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
  
           # Get firmware base name without extension
-          export FIRMWARE_BASE_NAME="${$FIRMWARE_FILE%.*}"
+          export FIRMWARE_BASE_NAME="${FIRMWARE_FILE%.*}"
           echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME" >> $GITHUB_ENV
           echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME"
 
           # Get firmware extension without rest of the name
-          export FIRMWARE_EXT="${$FIRMWARE_FILE##*.}"
+          export FIRMWARE_EXT="${FIRMWARE_FILE##*.}"
           echo "FIRMWARE_EXT=$FIRMWARE_EXT" >> $GITHUB_ENV
           echo "FIRMWARE_EXT=$FIRMWARE_EXT"
   
