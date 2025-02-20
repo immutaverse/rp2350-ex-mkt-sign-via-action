@@ -53,7 +53,7 @@ jobs:
 
         
           # Setup a timestamped directory where we want to 
-          # copy  our signed resources This is only used           
+          # copy  our signed resources This export FIRMWARE_BASE_NAME="${$FIRMWARE_FILE%.*}" is only used           
           export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
           echo "SIGN_OUTDIR=$SIGN_OUTDIR" >> $GITHUB_ENV
           echo "SIGN_OUTDIR=$SIGN_OUTDIR"
@@ -70,7 +70,7 @@ jobs:
           # you want to use during the signing event.   
           mkdir -p $SIGN_WORKSPACE
           cp unsigned/*.uf2 $SIGN_WORKSPACE
-          cp unsigned/*.otp* $SIGN_WORKSPACE
+          cp unsigned/*.otp* $SIGN_WORKSPACE 2>/dev/null || true
           echo "ls $SIGN_WORKSPACE"
           ls $SIGN_WORKSPACE
       
