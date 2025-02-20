@@ -4,14 +4,103 @@ jobs:
   sign-firmware:
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Set Environment Variables
+        shell: bash
+        run: |
+          # Set the firmware file we want to save        
+          # we assume latter that this file will be copied
+          # to the workspace directory
+          export FIRMWARE_FILE="blink_fast.uf2"
+          echo "FIRMWARE_FILE=$FIRMWARE_FILE" >> $GITHUB_ENV
+          echo "FIRMWARE_FILE=$FIRMWARE_FILE"
+
+
+          # Dedicated directory for signer to work with
+          # This directory is mounted by the signing utilities
+          # You should only place content in that directory
+          # you want to expose to the signing utility. 
+          export SIGN_WORKSPACE="sign_workspace"
+          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE" >> $GITHUB_ENV
+          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
+ 
+          # Get firmware base name without extension
+          export FIRMWARE_BASE_NAME="${$FIRMWARE_IN_PATH%.*}"
+          echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME" >> $GITHUB_ENV
+          echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME"
+
+          # Get firmware extension without rest of the name
+          export FIRMWARE_EXT="${$FIRMWARE_IN_PATH##*.}"
+          echo "FIRMWARE_EXT=$FIRMWARE_EXT" >> $GITHUB_ENV
+          echo "FIRMWARE_EXT=$FIRMWARE_EXT"
+  
+          # Where we want to write the signed firmware 
+          # must be inside the sign workspace
+          export FIRMWARE_IN_PATH="$SIGN_WORKSPACE/$FIRMWARE_FILE"
+          echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH" >> $GITHUB_ENV  
+          echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH"
+
+
+          # Insert .signed into our firmware file name.  
+          # for our output file. 
+          export FIRMWARE_OUT_NAME="$FIRMWARE_BASE_NAME.signed.$FIRMWARE_EXT"
+          echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME" >> $GITHUB_ENV
+          echo "FIRMWARE_OUT_NAME=$FIRMWARE_OUT_NAME"
+
+          # Copy the firmware to location to where we want the 
+          # firmware signer to have to access it.   
+          mkdir -p $SIGN_WORKSPACE
+          cp unsigned/*.uf2 $SIGN_WORKSPACE
+          cp unsigned/*.otp* $SIGN_WORKSPACE
+          echo "ls $SIGN_WORKSPACE"
+          ls $SIGN_WORKSPACE
+          
+          # Setup a timestamped directory where we want to 
+          # copy  our signed resources This is only used           
+          export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
+          echo "SIGN_OUTDIR=$SIGN_OUTDIR" >> $GITHUB_ENV
+          echo "SIGN_OUTDIR=$SIGN_OUTDIR"
+              
+
+
+
+      - name: Set up Docker Buildx
+        shell: bash
+        run: |
+          # Make the directory where we want to save the signed firmware 
+          # exists. This must be inside of docker workspace
+          mkdir -p  OUTDIR
+          mkdir -p $SIGN_OUTDIR
+          
+          # copy our built firmware to a place where signing agent
+          # can reach it during the signing event.  Note for 
+          # better containment copy only the file you wanted signed
+          # to this directory.  This directory should contain 
+          # any otp file you want to use to set options during 
+          # the signing event.  
+          cp -r $FIRMWARE_SRC_DIR $DOCKER_WORKSPACE
+
+
+
 
       - name: Run Signing Action
         uses: immutaverse/rp2350-mkt-signer@main              
         with:
-          # Path to the previously generated UF2 firmware file
-          FIRMWARE: 'unsigned/blink_fast.uf2'
+          # This is diectory where you want the signing utility
+          # to be able access files.   You should only place assets
+          # you want the signing tool to have access to in this directory          
+          SIGN_WORKSPACE: '$SIGN_WORKSPACE'
+
+          # filename to read unsigned firmeware from Assumes it is 
+          # at first level directory inside $SIGN_WORKSPACE
+          FIRMWARE: '$FIRMWARE_FILE'
+
+          # filename to write signed firmware to.  assumes
+          # it is first level inside of SIGN_WORKSPACE
+          FIRMWARE_OUTPUT: '$FIRMWARE_OUT_NAME'
 
           # 'sign' to sign an existing firmware file.
           # 'build' to build the firmware from source and sign it.
@@ -19,7 +108,10 @@ jobs:
           
           # Path to the OTP firmware options file that will be
           # updated with the public key for signing.
-          OTP_FILE: 'signed/blink_fast.otp.json'
+          # relative inside of DOCKER_WORK_DIR  Please note 
+          # this file will be changed destructively so 
+          # make a copy of it first.
+          OTP_FILE: '$SIGN_WORKSPACE/$FIRMWARE_BASE_NAME.otp.json'
 
           # The board name passed into the build scripts.
           # Normally only used when BUILD_ACTION = build.
@@ -38,7 +130,7 @@ jobs:
           # GitHub secrets but can be provided from any source.
           PRIVATE_KEY: ${{ secrets.RP2350_SAMPLE_PRIVATE_KEY }}
 
-          DOCKER_ACCESS_TOKEN: ${{ secrets.RP2350_DOCKER_ACCESS_KEY }}
+          SIGN_ACCESS_TOKEN: ${{ secrets.RP2350_DOCKER_ACCESS_KEY }}
         
 
 
