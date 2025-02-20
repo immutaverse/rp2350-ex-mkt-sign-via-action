@@ -143,5 +143,5 @@ jobs:
           git add signed_artifacts/
           git commit -m "Add signed firmware $TIMESTAMP"
           git push origin main
-          # joe234567891069
+          # joe23456789106
           #demo-signing-token
