@@ -107,7 +107,7 @@ jobs:
       - name: Run Docker Container to perform the signing
         shell: bash
         run: |
-          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE
+          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
           echo "start docker run"
           docker run --rm -a stdout -a stderr \
             -v "$GITHUB_WORKSPACE/$SIGN_WORKSPACE:/workspace" \
