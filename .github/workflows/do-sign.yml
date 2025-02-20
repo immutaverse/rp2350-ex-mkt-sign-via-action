@@ -107,8 +107,10 @@ jobs:
       - name: Run Docker Container to perform the signing
         shell: bash
         run: |
+          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE
           echo "start docker run"
-          docker run --rm -a stdout -a stderr -v "$GITHUB_WORKSPACE/$SIGN_WORKSPACE:/workspace" \
+          docker run --rm -a stdout -a stderr \
+            -v "$GITHUB_WORKSPACE/$SIGN_WORKSPACE:/workspace" \
             -e PRIVATE_KEY="$PRIVATE_KEY" \
             -e FIRMWARE="workspace/$FIRMWARE_FILE" \
             -e OTP_FILE="workspace/$FIRMWARE_BASE_NAME.otp.json" \
@@ -118,7 +120,7 @@ jobs:
             -e SIGN_LOG_LEVEL="DEBUG" \
             -e SIGN_METADATA="NONE" \
             -e SOURCE_DIR="NONE" \
-            -e SIGN_ACCESS_TOKEN="${{ secrets.RP2350_DOCKER_ACCESS_KEY }}" \            
+            -e SIGN_ACCESS_TOKEN="${{ secrets.RP2350_DOCKER_ACCESS_KEY }}" \
             ghcr.io/immutaverse/pico-sign:latest
 
             #NOTE:  :latest can be replaced with the specific version 
