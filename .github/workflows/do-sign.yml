@@ -70,9 +70,9 @@ jobs:
           # you want to use during the signing event.   
           mkdir -p ${PWD}/$SIGN_WORKSPACE
           cp unsigned/*.uf2 ${PWD}/$SIGN_WORKSPACE
-          cp unsigned/*.otp* $PWD}/$SIGN_WORKSPACE 2>/dev/null || true
-          echo "ls ${PWD}/$SIGN_WORKSPACE"
-          ls ${PWD}/$SIGN_WORKSPACE
+          cp unsigned/*.otp* ${PWD}/$SIGN_WORKSPACE 2>/dev/null || true
+          echo "listing files ${PWD}/$SIGN_WORKSPACE"
+          ls -lah ${PWD}/$SIGN_WORKSPACE
       
 
           # Make the directory where we want to save the signed firmware 
