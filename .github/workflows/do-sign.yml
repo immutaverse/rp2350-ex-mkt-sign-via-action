@@ -139,8 +139,8 @@ jobs:
       - name: Upload the subdirectory as an artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "$ARTIFACT_NAME"
-          path: "$SIGN_WORKSPACE"
+          name: "${{ env.ARTIFACT_NAME }}"
+          path: "${{ env.SIGN_WORKSPACE }}"
           retention-days: 1
 
          
