@@ -54,6 +54,9 @@ jobs:
           #export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
           #echo "SIGN_OUTDIR=$SIGN_OUTDIR" >> $GITHUB_ENV
           #echo "SIGN_OUTDIR=$SIGN_OUTDIR"
+          export "ARTIFACT_NAME=signed-${{ github.repository }}-$(date +'%Y%m%d.%H.%M.%S')" 
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME"
               
 
       - name: sign_setup_directories
@@ -108,14 +111,14 @@ jobs:
           docker run --rm -a stdout -a stderr -v "$GITHUB_WORKSPACE/$SIGN_WORKSPACE:/workspace" \
             -e PRIVATE_KEY="$PRIVATE_KEY" \
             -e FIRMWARE="workspace/$FIRMWARE_FILE" \
-            -e OTP_FILE='workspace/$FIRMWARE_BASE_NAME.otp.json' \
-            -e FIRMWARE_OUTPUT="workspace/$FIRMWAR_OUT_NAME" \
+            -e OTP_FILE="workspace/$FIRMWARE_BASE_NAME.otp.json" \
+            -e FIRMWARE_OUTPUT="workspace/$FIRMWARE_OUT_NAME" \
             -e BOARD_NAME="pico2" \
-            -e BUILD_ACTION="sign}" \
-            -e SIGN_LOG_LEVEL="DEBCUG" \
+            -e BUILD_ACTION="sign" \
+            -e SIGN_LOG_LEVEL="DEBUG" \
             -e SIGN_METADATA="NONE" \
             -e SOURCE_DIR="NONE" \
-            -e SIGN_ACCESS_TOKEN="${{ secrets.RP2350_DOCKER_ACCESS_KEY }} \            
+            -e SIGN_ACCESS_TOKEN="${{ secrets.RP2350_DOCKER_ACCESS_KEY }}" \            
             ghcr.io/immutaverse/pico-sign:latest
 
             #NOTE:  :latest can be replaced with the specific version 
@@ -125,7 +128,6 @@ jobs:
             #  ASAP but not every group agrees. 
             
           echo "docker run finished"
-          echo "ARTIFACT_NAME=signed-$(basename-${{ github.repository }})-$(date +'%Y%m%d')"  >> $GITHUB_ENV
 
 
       # The artifact can be referenced by name for retention days.
