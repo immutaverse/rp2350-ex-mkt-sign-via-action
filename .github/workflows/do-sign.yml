@@ -80,18 +80,16 @@ jobs:
         
 
       - name: Log in to GitHub Container Registry (GHCR) using immutiverse PAT
-          shell: bash
-          run: echo "${{ secrets.RP2350_DOCKER_ACCESS_KEY }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-          # TODO: We need to pass our access token to cloud to get 
-          # the token we need to access the docker image.  
-  
+        shell: bash
+        run: echo "${{ secrets.RP2350_DOCKER_ACCESS_KEY }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+       
 
       - name: pull docker image from registry
-          shell: bash
-          run: |
-            echo "start docker pull"
-            docker pull ghcr.io/immutaverse/pico-sign:latest          
-            echo "docker pull complete"
+        shell: bash
+        run: |
+          echo "start docker pull"
+          docker pull ghcr.io/immutaverse/pico-sign:latest          
+          echo "docker pull complete"
 
 
       # NOTE:  We are manually starting Docker here because otherwise
