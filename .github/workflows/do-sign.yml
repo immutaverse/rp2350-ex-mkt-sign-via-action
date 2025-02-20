@@ -54,7 +54,11 @@ jobs:
           #export SIGN_OUTDIR="signed/$(date +"%Y-%m-%d.%H.%M.%S")"          
           #echo "SIGN_OUTDIR=$SIGN_OUTDIR" >> $GITHUB_ENV
           #echo "SIGN_OUTDIR=$SIGN_OUTDIR"
-          export "ARTIFACT_NAME=signed-${{ github.repository }}-$(date +'%Y%m%d.%H.%M.%S')" 
+
+          export REPO_NAME="${{ github.repository }}"
+          export REPO_ONLY="${REPO_NAME##*/}"
+          export TIMESTAMP="$(date +'%Y%m%d.%H.%M.%S')"
+          export ARTIFACT_NAME="signed-${REPO_ONLY}-${TIMESTAMP}"
           echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
           echo "ARTIFACT_NAME=$ARTIFACT_NAME"
               
