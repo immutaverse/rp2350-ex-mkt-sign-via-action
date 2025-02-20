@@ -87,7 +87,7 @@ jobs:
           # This is diectory where you want the signing utility
           # to be able access files.   You should only place assets
           # you want the signing tool to have access to in this directory          
-          SIGN_WORKSPACE: '$SIGN_WORKSPACE'
+          SIGN_WORKSPACE: '${PWD}/$SIGN_WORKSPACE'
 
           # filename to read unsigned firmeware from Assumes it is 
           # at first level directory inside $SIGN_WORKSPACE
@@ -106,7 +106,7 @@ jobs:
           # relative inside of DOCKER_WORK_DIR  Please note 
           # this file will be changed destructively so 
           # make a copy of it first.
-          OTP_FILE: '$SIGN_WORKSPACE/$FIRMWARE_BASE_NAME.otp.json'
+          OTP_FILE: '${PWD}/$SIGN_WORKSPACE/$FIRMWARE_BASE_NAME.otp.json'
 
           # The board name passed into the build scripts.
           # Normally only used when BUILD_ACTION = build.
