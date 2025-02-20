@@ -24,7 +24,7 @@ jobs:
           # This directory is mounted by the signing utilities
           # You should only place content in that directory
           # you want to expose to the signing utility. 
-          export SIGN_WORKSPACE="sign_workspace"
+          export SIGN_WORKSPACE="$GITHUB_WORKSPACE/sign_workspace"
           echo "SIGN_WORKSPACE=$SIGN_WORKSPACE" >> $GITHUB_ENV
           echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
  
@@ -68,12 +68,12 @@ jobs:
           # wanted signed to this directory.  This directory should
           # also contain any otp file or other options files
           # you want to use during the signing event.   
-          mkdir -p ${PWD}/$SIGN_WORKSPACE
-          cp unsigned/*.uf2 ${PWD}/$SIGN_WORKSPACE
-          cp unsigned/*.otp* ${PWD}/$SIGN_WORKSPACE 2>/dev/null || true
-          echo "listing files ${PWD}/$SIGN_WORKSPACE"
-          ls -lah ${PWD}/$SIGN_WORKSPACE
-      
+          mkdir -p $SIGN_WORKSPACE
+          cp unsigned/*.uf2 $SIGN_WORKSPACE
+          cp unsigned/*.otp* $SIGN_WORKSPACE 2>/dev/null || true
+          echo "listing files $SIGN_WORKSPACE"
+          ls -lah $SIGN_WORKSPACE
+          
 
           # Make the directory where we want to save the signed firmware 
           # exists. This must be inside of docker workspace          
@@ -87,7 +87,7 @@ jobs:
           # This is diectory where you want the signing utility
           # to be able access files.   You should only place assets
           # you want the signing tool to have access to in this directory          
-          SIGN_WORKSPACE: '${PWD}/$SIGN_WORKSPACE'
+          SIGN_WORKSPACE: '$SIGN_WORKSPACE'
 
           # filename to read unsigned firmeware from Assumes it is 
           # at first level directory inside $SIGN_WORKSPACE
@@ -106,7 +106,7 @@ jobs:
           # relative inside of DOCKER_WORK_DIR  Please note 
           # this file will be changed destructively so 
           # make a copy of it first.
-          OTP_FILE: '${PWD}/$SIGN_WORKSPACE/$FIRMWARE_BASE_NAME.otp.json'
+          OTP_FILE: '$SIGN_WORKSPACE/$FIRMWARE_BASE_NAME.otp.json'
 
           # The board name passed into the build scripts.
           # Normally only used when BUILD_ACTION = build.
