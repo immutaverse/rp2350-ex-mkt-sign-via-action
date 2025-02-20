@@ -65,6 +65,7 @@ jobs:
           # wanted signed to this directory.  This directory should
           # also contain any otp file or other options files
           # you want to use during the signing event.   
+          echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
           mkdir -p $SIGN_WORKSPACE
           cp unsigned/*.uf2 $SIGN_WORKSPACE
           cp unsigned/*.otp* $SIGN_WORKSPACE 2>/dev/null || true
@@ -74,7 +75,7 @@ jobs:
 
           # Make sure the directory where we want to save the signed firmware 
           # exists. This must be inside of docker workspace          
-          mkdir -p $SIGN_OUTDIR
+          #mkdir -p $SIGN_OUTDIR
           echo -lan "sign_workspace"
           ls -lan sign_workspace
         
