@@ -29,20 +29,20 @@ jobs:
           echo "SIGN_WORKSPACE=$SIGN_WORKSPACE"
  
           # Get firmware base name without extension
-          export FIRMWARE_BASE_NAME="${$FIRMWARE_IN_PATH%.*}"
+          export FIRMWARE_BASE_NAME="${$FIRMWARE_FILE%.*}"
           echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME" >> $GITHUB_ENV
           echo "FIRMWARE_BASE_NAME=$FIRMWARE_BASE_NAME"
 
           # Get firmware extension without rest of the name
-          export FIRMWARE_EXT="${$FIRMWARE_IN_PATH##*.}"
+          export FIRMWARE_EXT="${$FIRMWARE_FILE##*.}"
           echo "FIRMWARE_EXT=$FIRMWARE_EXT" >> $GITHUB_ENV
           echo "FIRMWARE_EXT=$FIRMWARE_EXT"
   
-          # Where we want to write the signed firmware 
-          # must be inside the sign workspace
-          export FIRMWARE_IN_PATH="$SIGN_WORKSPACE/$FIRMWARE_FILE"
-          echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH" >> $GITHUB_ENV  
-          echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH"
+          ## Where we want to write the signed firmware 
+          ## must be inside the sign workspace
+          #export FIRMWARE_IN_PATH="$SIGN_WORKSPACE/$FIRMWARE_FILE"
+          #echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH" >> $GITHUB_ENV  
+          #echo "FIRMWARE_IN_PATH=$FIRMWARE_IN_PATH"
 
 
           # Insert .signed into our firmware file name.  
