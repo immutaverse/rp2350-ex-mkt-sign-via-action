@@ -71,8 +71,8 @@ jobs:
           mkdir -p $SIGN_WORKSPACE
           cp unsigned/*.uf2 $SIGN_WORKSPACE
           cp unsigned/*.otp* $SIGN_WORKSPACE 2>/dev/null || true
-          echo "ls ${pwd}/$SIGN_WORKSPACE"
-          ls ${pwd}/$SIGN_WORKSPACE
+          echo "ls ${PWD}/$SIGN_WORKSPACE"
+          ls ${PWD}/$SIGN_WORKSPACE
       
 
           # Make the directory where we want to save the signed firmware 
