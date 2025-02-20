@@ -111,7 +111,7 @@ jobs:
           echo "start docker run"
           docker run --rm -a stdout -a stderr \
             -v "$GITHUB_WORKSPACE/$SIGN_WORKSPACE:/workspace" \
-            -e PRIVATE_KEY="$PRIVATE_KEY" \
+            -e PRIVATE_KEY="${{ secrets.RP2350_SAMPLE_PRIVATE_KEY }}" \
             -e FIRMWARE="workspace/$FIRMWARE_FILE" \
             -e OTP_FILE="workspace/$FIRMWARE_BASE_NAME.otp.json" \
             -e FIRMWARE_OUTPUT="workspace/$FIRMWARE_OUT_NAME" \
