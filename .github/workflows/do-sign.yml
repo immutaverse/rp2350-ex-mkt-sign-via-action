@@ -68,9 +68,9 @@ jobs:
           # wanted signed to this directory.  This directory should
           # also contain any otp file or other options files
           # you want to use during the signing event.   
-          mkdir -p $SIGN_WORKSPACE
-          cp unsigned/*.uf2 $SIGN_WORKSPACE
-          cp unsigned/*.otp* $SIGN_WORKSPACE 2>/dev/null || true
+          mkdir -p ${PWD}/$SIGN_WORKSPACE
+          cp unsigned/*.uf2 ${PWD}/$SIGN_WORKSPACE
+          cp unsigned/*.otp* $PWD}/$SIGN_WORKSPACE 2>/dev/null || true
           echo "ls ${PWD}/$SIGN_WORKSPACE"
           ls ${PWD}/$SIGN_WORKSPACE
       
